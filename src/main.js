@@ -34,8 +34,20 @@ const zoomInput = document.getElementById('zoom');
 const renderButton = document.getElementById('renderButton');
 
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight - document.querySelector('.toolbar').offsetHeight;
+  const toolbarHeight = document.querySelector('.toolbar').offsetHeight;
+  const width = window.innerWidth;
+  const height = window.innerHeight - toolbarHeight;
+
+  // Maintain aspect ratio (4:3)
+  if (width / height > 4 / 3) {
+    canvas.height = height;
+    canvas.width = (height * 4) / 3;
+  } else {
+    canvas.width = width;
+    canvas.height = (width * 3) / 4;
+  }
+
+  canvas.style.margin = '0 auto'; // Center the canvas horizontally
 }
 
 function drawMandelbrot(maxIterations, zoom) {
@@ -117,7 +129,7 @@ renderButton.addEventListener('click', () => {
 
 window.addEventListener('resize', () => {
   resizeCanvas();
-  drawFractal(fractalTypeInput.value, 100, 4); // Re-render fractal on resize
+  drawFractal(fractalTypeInput.value, parseInt(maxIterationsInput.value, 10), parseFloat(zoomInput.value)); // Re-render fractal on resize
 });
 
 // Initial setup
