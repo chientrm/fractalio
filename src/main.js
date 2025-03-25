@@ -1,26 +1,30 @@
-import './style.css'
+import './style.css';
 
 document.querySelector('#app').innerHTML = `
-  <div class="toolbar">
-    <label>
-      Fractal Type:
-      <select id="fractalType">
-        <option value="mandelbrot">Mandelbrot</option>
-        <option value="julia">Julia</option>
-      </select>
-    </label>
-    <label>
-      Max Iterations:
-      <input id="maxIterations" type="number" value="100" min="10" max="1000" />
-    </label>
-    <label>
-      Zoom:
-      <input id="zoom" type="number" value="4" step="0.1" min="1" max="10" />
-    </label>
-    <button id="renderButton">Render</button>
+  <div class="flex flex-col h-screen">
+    <div class="toolbar bg-gray-800 text-white flex items-center p-4 shadow-md space-x-4">
+      <label class="flex items-center space-x-2">
+        <span>Fractal Type:</span>
+        <select id="fractalType" class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1">
+          <option value="mandelbrot">Mandelbrot</option>
+          <option value="julia">Julia</option>
+        </select>
+      </label>
+      <label class="flex items-center space-x-2">
+        <span>Max Iterations:</span>
+        <input id="maxIterations" type="number" value="100" min="10" max="1000" class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1" />
+      </label>
+      <label class="flex items-center space-x-2">
+        <span>Zoom:</span>
+        <input id="zoom" type="number" value="4" step="0.1" min="1" max="10" class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1" />
+      </label>
+      <button id="renderButton" class="ml-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">
+        Render
+      </button>
+    </div>
+    <canvas id="fractalCanvas" class="flex-grow bg-black"></canvas>
   </div>
-  <canvas id="fractalCanvas"></canvas>
-`
+`;
 
 const canvas = document.getElementById('fractalCanvas');
 const ctx = canvas.getContext('2d');
