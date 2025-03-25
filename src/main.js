@@ -2,31 +2,44 @@ import './style.css'
 
 document.querySelector('#app').innerHTML = `
   <div>
-    <h1>Fractal Math Study Tool</h1>
+    <h1>Fractal Math Studio</h1>
+    <div class="controls">
+      <label>
+        Max Iterations:
+        <input id="maxIterations" type="number" value="100" min="10" max="1000" />
+      </label>
+      <label>
+        Zoom:
+        <input id="zoom" type="number" value="4" step="0.1" min="1" max="10" />
+      </label>
+      <button id="renderButton">Render</button>
+    </div>
     <div class="canvas-container">
       <canvas id="fractalCanvas" width="800" height="600"></canvas>
     </div>
     <p class="description">
-      Use this tool to explore and study fractal mathematics. The canvas above will render fractals based on mathematical formulas.
+      Use this tool to explore and study fractal mathematics. Adjust the parameters above and click "Render" to see the changes.
     </p>
   </div>
 `
 
-// Add fractal rendering logic
 const canvas = document.getElementById('fractalCanvas');
 const ctx = canvas.getContext('2d');
+const maxIterationsInput = document.getElementById('maxIterations');
+const zoomInput = document.getElementById('zoom');
+const renderButton = document.getElementById('renderButton');
 
-function drawFractal() {
+function drawFractal(maxIterations, zoom) {
   const width = canvas.width;
   const height = canvas.height;
   const imageData = ctx.createImageData(width, height);
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
-      const cx = (x - width / 2) * 4 / width;
-      const cy = (y - height / 2) * 4 / height;
+      const cx = (x - width / 2) * zoom / width;
+      const cy = (y - height / 2) * zoom / height;
       let zx = 0, zy = 0, iteration = 0;
-      const maxIteration = 100;
+      const maxIteration = maxIterations;
 
       while (zx * zx + zy * zy < 4 && iteration < maxIteration) {
         const xtemp = zx * zx - zy * zy + cx;
@@ -47,4 +60,11 @@ function drawFractal() {
   ctx.putImageData(imageData, 0, 0);
 }
 
-drawFractal();
+renderButton.addEventListener('click', () => {
+  const maxIterations = parseInt(maxIterationsInput.value, 10);
+  const zoom = parseFloat(zoomInput.value);
+  drawFractal(maxIterations, zoom);
+});
+
+// Initial render
+drawFractal(100, 4);
