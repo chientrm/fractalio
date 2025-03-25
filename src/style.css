@@ -139,6 +139,12 @@ canvas {
   background-color: #535bf2;
 }
 
+.toolbar select {
+  margin-left: 0.5rem;
+  padding: 0.2rem;
+  font-size: 0.9rem;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
