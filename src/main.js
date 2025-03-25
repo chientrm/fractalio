@@ -3,42 +3,53 @@ import './style.css';
 document.querySelector('#app').innerHTML = `
   <div class="flex flex-col h-screen">
     <div class="toolbar bg-gray-800 text-white flex items-center p-4 shadow-md space-x-4">
-      <label class="flex items-center space-x-2">
-        <span>Fractal Type:</span>
-        <select id="fractalType" class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1">
-          <option value="mandelbrot">Mandelbrot</option>
-          <option value="julia">Julia</option>
-        </select>
-      </label>
-      <label class="flex items-center space-x-2">
-        <span>Max Iterations:</span>
-        <input id="maxIterations" type="number" value="100" min="10" max="1000" class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1" />
-      </label>
-      <label class="flex items-center space-x-2">
-        <span>Zoom:</span>
-        <input id="zoom" type="number" value="4" step="0.1" min="1" max="10" class="bg-gray-700 text-white border border-gray-600 rounded px-2 py-1" />
-      </label>
-      <button id="renderButton" class="ml-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">
-        Render
+      <button id="mandelbrotButton" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">
+        Mandelbrot
+      </button>
+      <button id="juliaButton" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded">
+        Julia
       </button>
     </div>
     <canvas id="fractalCanvas" class="flex-grow bg-black"></canvas>
+    <div id="popup" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
+      <div class="bg-white p-6 rounded shadow-md space-y-4">
+        <h2 id="popupTitle" class="text-lg font-bold"></h2>
+        <label class="block">
+          <span>Max Iterations:</span>
+          <input id="popupMaxIterations" type="number" value="100" min="10" max="1000" class="block w-full mt-1 border border-gray-300 rounded px-2 py-1" />
+        </label>
+        <label class="block">
+          <span>Zoom:</span>
+          <input id="popupZoom" type="number" value="4" step="0.1" min="1" max="10" class="block w-full mt-1 border border-gray-300 rounded px-2 py-1" />
+        </label>
+        <div class="flex justify-end space-x-2">
+          <button id="cancelButton" class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-4 rounded">
+            Cancel
+          </button>
+          <button id="renderPopupButton" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded">
+            Render
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 `;
 
 const canvas = document.getElementById('fractalCanvas');
 const ctx = canvas.getContext('2d');
-const fractalTypeInput = document.getElementById('fractalType');
-const maxIterationsInput = document.getElementById('maxIterations');
-const zoomInput = document.getElementById('zoom');
-const renderButton = document.getElementById('renderButton');
+const popup = document.getElementById('popup');
+const popupTitle = document.getElementById('popupTitle');
+const popupMaxIterations = document.getElementById('popupMaxIterations');
+const popupZoom = document.getElementById('popupZoom');
+const renderPopupButton = document.getElementById('renderPopupButton');
+const cancelButton = document.getElementById('cancelButton');
+let currentFractalType = 'mandelbrot';
 
 function resizeCanvas() {
   const toolbarHeight = document.querySelector('.toolbar').offsetHeight;
   const availableHeight = window.innerHeight - toolbarHeight;
   const availableWidth = window.innerWidth;
 
-  // Maintain aspect ratio (4:3) while ensuring the total height matches the window height
   if (availableWidth / availableHeight > 4 / 3) {
     canvas.height = availableHeight;
     canvas.width = (availableHeight * 4) / 3;
@@ -47,8 +58,8 @@ function resizeCanvas() {
     canvas.height = (availableWidth * 3) / 4;
   }
 
-  canvas.style.display = 'block'; // Ensure the canvas is displayed as a block element
-  canvas.style.margin = '0 auto'; // Center the canvas horizontally
+  canvas.style.display = 'block';
+  canvas.style.margin = '0 auto';
 }
 
 function drawMandelbrot(maxIterations, zoom) {
@@ -121,18 +132,37 @@ function drawFractal(type, maxIterations, zoom) {
   }
 }
 
-renderButton.addEventListener('click', () => {
-  const fractalType = fractalTypeInput.value;
-  const maxIterations = parseInt(maxIterationsInput.value, 10);
-  const zoom = parseFloat(zoomInput.value);
-  drawFractal(fractalType, maxIterations, zoom);
+function showPopup(type) {
+  currentFractalType = type;
+  popupTitle.textContent = `Render ${type.charAt(0).toUpperCase() + type.slice(1)} Fractal`;
+  popup.classList.remove('hidden');
+}
+
+function hidePopup() {
+  popup.classList.add('hidden');
+}
+
+document.getElementById('mandelbrotButton').addEventListener('click', () => {
+  showPopup('mandelbrot');
 });
+
+document.getElementById('juliaButton').addEventListener('click', () => {
+  showPopup('julia');
+});
+
+renderPopupButton.addEventListener('click', () => {
+  const maxIterations = parseInt(popupMaxIterations.value, 10);
+  const zoom = parseFloat(popupZoom.value);
+  hidePopup();
+  drawFractal(currentFractalType, maxIterations, zoom);
+});
+
+cancelButton.addEventListener('click', hidePopup);
 
 window.addEventListener('resize', () => {
   resizeCanvas();
-  drawFractal(fractalTypeInput.value, parseInt(maxIterationsInput.value, 10), parseFloat(zoomInput.value)); // Re-render fractal on resize
+  drawFractal(currentFractalType, parseInt(popupMaxIterations.value, 10), parseFloat(popupZoom.value));
 });
 
-// Initial setup
 resizeCanvas();
 drawFractal('mandelbrot', 100, 4);
