@@ -35,18 +35,19 @@ const renderButton = document.getElementById('renderButton');
 
 function resizeCanvas() {
   const toolbarHeight = document.querySelector('.toolbar').offsetHeight;
-  const width = window.innerWidth;
-  const height = window.innerHeight - toolbarHeight;
+  const availableHeight = window.innerHeight - toolbarHeight;
+  const availableWidth = window.innerWidth;
 
-  // Maintain aspect ratio (4:3)
-  if (width / height > 4 / 3) {
-    canvas.height = height;
-    canvas.width = (height * 4) / 3;
+  // Maintain aspect ratio (4:3) while ensuring the total height matches the window height
+  if (availableWidth / availableHeight > 4 / 3) {
+    canvas.height = availableHeight;
+    canvas.width = (availableHeight * 4) / 3;
   } else {
-    canvas.width = width;
-    canvas.height = (width * 3) / 4;
+    canvas.width = availableWidth;
+    canvas.height = (availableWidth * 3) / 4;
   }
 
+  canvas.style.display = 'block'; // Ensure the canvas is displayed as a block element
   canvas.style.margin = '0 auto'; // Center the canvas horizontally
 }
 
